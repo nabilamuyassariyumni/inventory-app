@@ -14,7 +14,7 @@ return new class extends Migration
         // Menambahkan kolom deskripsi pada tabel products
         Schema::table('products', function (Blueprint $table) {
             $table->text('description')->nullable();
-            $table->enum('status', ['tersedia', 'habis'])->default('tersedia');
+            $table->enum('status', ['Tersedia', 'Tidak Tersedia'])->default('Tersedia');
             $table->bigInteger('price')->change();
         });
     }

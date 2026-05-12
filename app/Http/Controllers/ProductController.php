@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
 
@@ -12,6 +13,7 @@ class ProductController extends Controller
         $products = Product::with('category')->latest()->paginate(10);
         return view('products.index', compact('products'));
     }
+
 
     //INSERT
     public function insert()
@@ -28,21 +30,38 @@ class ProductController extends Controller
         return redirect('/products')->with('success', 'Data berhasil ditambahkan');
     }
 
-    //UPDATE
-    public function update($id)
-    {
-        $product = Product::findOrFail($id);
+    // //UPDATE
+    // public function update($id)
+    // {
+    //     $product = Product::findOrFail($id);
 
-        $product->update([
-            'name' => 'Produk Update',
-            'price' => 20000,
-            'stock' => 5,
-            'description' => 'Produk yang diupdate',
-            'status' => 'habis'
-        ]);
+    //     $product->update([
+    //         'name' => 'Produk Update',
+    //         'price' => 20000,
+    //         'stock' => 5,
+    //         'description' => 'Produk yang diupdate',
+    //         'status' => 'habis'
+    //     ]);
 
-        return redirect('/products')->with('success', 'Data berhasil diupdate');
-    }
+    //     return redirect('/products')->with('success', 'Data berhasil diupdate');
+    // }
+
+    public function update(Request $request, $id)
+{
+    $product = Product::findOrFail($id);
+
+    $product->update([
+        'category_id' => $request->category_id,
+        'name' => $request->name,
+        'price' => $request->price,
+        'stock' => $request->stock,
+        'description' => $request->description,
+        'status' => $request->status
+    ]);
+
+    return redirect('/products')
+        ->with('success', 'Data berhasil diupdate');
+}
 
     //DELETE
     public function delete($id)
@@ -51,5 +70,32 @@ class ProductController extends Controller
         $product->delete();
 
         return redirect('/products')->with('success', 'Data berhasil dihapus');
+    }
+
+    public function create()
+    {
+        $categories = Category::all();
+        return view('products.create', compact('categories'));
+    }
+
+    public function edit($id)
+    {
+        $product = Product::findOrFail($id);
+        $categories = Category::all();
+        return view('products.update', compact('product', 'categories'));
+    }
+
+    public function store(Request $request)
+    {
+        Product::create([
+            'name' => $request->name,
+            'category_id' => $request->category_id,
+            'price' => $request->price,
+            'stock' => $request->stock,
+            'description' => $request->description,
+            'status' => $request->status,
+        ]);
+
+        return redirect('/products')->with('success', 'Data berhasil ditambahkan');
     }
 }
